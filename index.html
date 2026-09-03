@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rozvrh hodín</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --hour:96px;
+  --bg-main:#f8fafc; --bg-card:#fff; --bg-secondary:#f1f5f9;
+  --text-main:#0f172a; --text-muted:#64748b;
+  --border-color:#e2e8f0; --border-subtle:#eef2f6;
+  --p-bg:#eff6ff; --p-br:#bfdbfe; --p-tx:#1d4ed8; --p-bd:#3b82f6;
+  --c-bg:#f0fdf4; --c-br:#bbf7d0; --c-tx:#15803d; --c-bd:#22c55e;
+  --s-bg:#fffbeb; --s-br:#fde68a; --s-tx:#b45309; --s-bd:#f59e0b;
+  --o-bg:#f5f3ff; --o-br:#ddd6fe; --o-tx:#6d28d9; --o-bd:#8b5cf6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px;
+  --sh-sm:0 1px 2px 0 rgb(0 0 0/.05);
+  --sh-md:0 4px 6px -1px rgb(0 0 0/.07),0 2px 4px -2px rgb(0 0 0/.05);
+  --sh-lg:0 10px 20px -4px rgb(0 0 0/.15);
+}
+[data-theme="dark"]{
+  --bg-main:#0f172a; --bg-card:#1e293b; --bg-secondary:#334155;
+  --text-main:#f8fafc; --text-muted:#94a3b8;
+  --border-color:#334155; --border-subtle:#293548;
+  --p-bg:rgba(30,58,138,.4); --p-br:#1e40af; --p-tx:#bfdbfe;
+  --c-bg:rgba(20,83,45,.4); --c-br:#15803d; --c-tx:#bbf7d0;
+  --s-bg:rgba(120,53,15,.4); --s-br:#92400e; --s-tx:#fde68a;
+  --o-bg:rgba(88,28,135,.4); --o-br:#6b21a8; --o-tx:#ddd6fe;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg-main);color:var(--text-main);min-height:100vh;padding:1.5rem}
+.container{max-width:1500px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem}
+h1{font-size:1.75rem;font-weight:800;letter-spacing:-.02em}
+.sub{font-size:.875rem;color:var(--text-muted);margin-top:.35rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.sem{background:var(--bg-secondary);color:var(--text-main);padding:.2rem .65rem;border-radius:999px;font-size:.75rem;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg-card);color:var(--text-main);border:1px solid var(--border-color);padding:.5rem 1rem;border-radius:var(--r-sm);font:600 .875rem 'Plus Jakarta Sans',sans-serif;cursor:pointer;box-shadow:var(--sh-sm)}
+.btn:hover{background:var(--bg-secondary)}
+.legend{display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);padding:.85rem 1.25rem;border:1px solid var(--border-color);border-radius:var(--r-md);margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem;box-shadow:var(--sh-sm)}
+.lg{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
+.lt{display:inline-flex;align-items:center;gap:.5rem;font-size:.8125rem;font-weight:600}
+.pill{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-weight:800;color:#fff;line-height:1.35}
+.pill.P{background:var(--p-bd)} .pill.C{background:var(--c-bd)} .pill.S{background:var(--s-bd)} .pill.O{background:var(--o-bd)}
+.tabs{display:none;gap:.5rem;margin-bottom:1rem;overflow-x:auto;padding-bottom:.25rem}
+.tab{padding:.5rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-main);font:600 .875rem 'Plus Jakarta Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.tab.active{background:var(--text-main);color:var(--bg-card);border-color:var(--text-main)}
+.card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--r-lg);box-shadow:var(--sh-md);overflow:hidden}
+.grid{display:grid;grid-template-columns:72px repeat(5,1fr)}
+.dh{background:var(--bg-secondary);padding:.85rem .5rem;text-align:center;font-weight:700;font-size:.9375rem;border-bottom:2px solid var(--border-color);border-right:1px solid var(--border-color)}
+.dh:last-child{border-right:none}
+.dh small{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.timecol{background:var(--bg-secondary);border-right:1px solid var(--border-color)}
+.ts{height:var(--hour);border-bottom:1px solid var(--border-subtle);color:var(--text-muted);font-size:.75rem;font-weight:700;display:flex;align-items:flex-start;justify-content:center;padding-top:.3rem}
+.col{position:relative;border-right:1px solid var(--border-subtle);background:var(--bg-card);height:calc(var(--hour)*12)}
+.col:last-child{border-right:none}
+.hl{position:absolute;left:0;right:0;border-top:1px solid var(--border-subtle);pointer-events:none}
+.ev{position:absolute;left:4px;right:4px;border-radius:var(--r-sm);padding:6px 8px;border:1px solid transparent;display:flex;flex-direction:column;gap:2px;cursor:pointer;box-shadow:var(--sh-sm);overflow:hidden;z-index:1;transition:box-shadow .15s,transform .15s}
+.ev:hover{transform:translateY(-2px);box-shadow:var(--sh-lg);z-index:20}
+.ev.P{background:var(--p-bg);border-color:var(--p-br);color:var(--p-tx)}
+.ev.C{background:var(--c-bg);border-color:var(--c-br);color:var(--c-tx)}
+.ev.S{background:var(--s-bg);border-color:var(--s-br);color:var(--s-tx)}
+.ev.O{background:var(--o-bg);border-color:var(--o-br);color:var(--o-tx)}
+.ev.left{right:50%;margin-right:2px}
+.ev.right{left:50%;margin-left:2px}
+.eh{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.code{font-size:.66rem;font-weight:800;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.name{font-size:.78rem;font-weight:700;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.who{font-size:.68rem;font-weight:500;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note{font-size:.66rem;font-weight:700;margin-top:2px;padding:1px 5px;border-radius:4px;background:rgba(0,0,0,.06);align-self:flex-start}
+[data-theme="dark"] .note{background:rgba(255,255,255,.12)}
+.foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:.66rem;font-weight:700}
+.room{background:rgba(255,255,255,.7);padding:1px 5px;border-radius:4px;font-weight:800;white-space:nowrap}
+[data-theme="dark"] .room{background:rgba(0,0,0,.3)}
+.ev.short{padding:5px 8px;gap:1px}
+.ev.short .name{-webkit-line-clamp:1;font-size:.74rem}
+.ev.short .who,.ev.short .note{display:none}
+.tag{font-size:.6rem;background:rgba(139,92,246,.18);padding:1px 4px;border-radius:3px;font-weight:800;text-transform:uppercase;white-space:nowrap}
+.ovl{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.mc{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--r-lg);max-width:480px;width:100%;padding:1.5rem;box-shadow:var(--sh-lg);position:relative}
+.mx{position:absolute;top:.9rem;right:1rem;background:none;border:none;font-size:1.4rem;color:var(--text-muted);cursor:pointer;line-height:1}
+.mt{font-size:1.2rem;font-weight:800;margin-bottom:.75rem;line-height:1.3;padding-right:1.5rem}
+.mr{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--border-subtle);font-size:.875rem}
+.mr:last-child{border-bottom:none}
+.ml{color:var(--text-muted);font-weight:600;white-space:nowrap}
+.mv{font-weight:700;text-align:right}
+@media(max-width:1100px){
+  .tabs{display:flex}
+  .grid{grid-template-columns:60px 1fr}
+  .dh:not(.on),.col:not(.on){display:none!important}
+}
+@media(max-width:640px){body{padding:1rem .5rem}}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <h1>Rozvrh hodín</h1>
+      <div class="sub"><span class="sem">Zimný semester 2026/2027</span><span>TYZ &middot; 14.09.2026 &ndash; 18.12.2026</span></div>
+    </div>
+    <button class="btn" onclick="toggleTheme()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Téma
+    </button>
+  </header>
+
+  <div class="legend">
+    <div class="lg">
+      <span class="lt"><span class="pill P">P</span>Prednáška</span>
+      <span class="lt"><span class="pill C">C</span>Cvičenie / Prax</span>
+      <span class="lt"><span class="pill S">S</span>Seminár</span>
+      <span class="lt"><span class="pill O">OPT</span>Možnosť / voľba</span>
+    </div>
+    <div style="font-size:.8125rem;color:var(--text-muted);font-weight:600">Klikni na predmet pre detaily</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchDay(0)">Pondelok</button>
+    <button class="tab" onclick="switchDay(1)">Utorok</button>
+    <button class="tab" onclick="switchDay(2)">Streda</button>
+    <button class="tab" onclick="switchDay(3)">Štvrtok</button>
+    <button class="tab" onclick="switchDay(4)">Piatok</button>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="dh"><small>Čas</small></div>
+      <div class="dh on">Pondelok</div>
+      <div class="dh">Utorok</div>
+      <div class="dh">Streda</div>
+      <div class="dh">Štvrtok</div>
+      <div class="dh">Piatok</div>
+
+      <div class="timecol"><div class="ts">07:00</div><div class="ts">08:00</div><div class="ts">09:00</div><div class="ts">10:00</div><div class="ts">11:00</div><div class="ts">12:00</div><div class="ts">13:00</div><div class="ts">14:00</div><div class="ts">15:00</div><div class="ts">16:00</div><div class="ts">17:00</div><div class="ts">18:00</div></div>
+      <div class="col on" id="col-0">
+        <div class="hl" style="top:96px"></div>
+        <div class="hl" style="top:192px"></div>
+        <div class="hl" style="top:288px"></div>
+        <div class="hl" style="top:384px"></div>
+        <div class="hl" style="top:480px"></div>
+        <div class="hl" style="top:576px"></div>
+        <div class="hl" style="top:672px"></div>
+        <div class="hl" style="top:768px"></div>
+        <div class="hl" style="top:864px"></div>
+        <div class="hl" style="top:960px"></div>
+        <div class="hl" style="top:1056px"></div>
+        <div class="ev C" style="top:8px;height:144px" onclick="showDetail('PPgU - C','Psychológia a pedagogická psychológia pre učiteľov','07:05 &ndash; 08:35','90 min','AS3S3','Barbierik','Cvičenie','')">
+          <div class="eh"><span class="code">PPgU - C</span><span class="pill C">C</span></div>
+          <div class="name">Psychológia pre učiteľov</div>
+          <div class="who">Barbierik</div>
+          <div class="foot"><span>07:05&ndash;08:35</span><span class="room">AS3S3</span></div>
+        </div>
+        <div class="ev P" style="top:184px;height:144px" onclick="showDetail('PaD - P','Pedagogika a didaktika pre učiteľov','08:55 &ndash; 10:25','90 min','—','—','Prednáška','')">
+          <div class="eh"><span class="code">PaD - P</span><span class="pill P">P</span></div>
+          <div class="name">Pedagogika a didaktika</div>
+          <div class="who">—</div>
+          <div class="foot"><span>08:55&ndash;10:25</span><span class="room">—</span></div>
+        </div>
+        <div class="ev C" style="top:360px;height:144px" onclick="showDetail('ZZP - C','Zážitková pedagogika','10:45 &ndash; 12:15','90 min','AA0S2','Petríková','Cvičenie','')">
+          <div class="eh"><span class="code">ZZP - C</span><span class="pill C">C</span></div>
+          <div class="name">Zážitková pedagogika</div>
+          <div class="who">Petríková</div>
+          <div class="foot"><span>10:45&ndash;12:15</span><span class="room">AA0S2</span></div>
+        </div>
+        <div class="ev C left" style="top:800px;height:144px" onclick="showDetail('AETLmu - C','Americké etnické literatúry pre AJALm AJEIEm','15:20 &ndash; 16:50','90 min','AP1P1','Buráková','Cvičenie','')">
+          <div class="eh"><span class="code">AETLmu - C</span><span class="pill C">C</span></div>
+          <div class="name">Americké etnické literatúry</div>
+          <div class="who">Buráková</div>
+          <div class="foot"><span>15:20&ndash;16:50</span><span class="room">AP1P1</span></div>
+        </div>
+        <div class="ev S right short" style="top:888px;height:72px" onclick="showDetail('DBaI - S','Dejiny Balkánu po 2. sv. vojne','16:15 &ndash; 17:00','45 min','AP2S11','Melichárek','Seminár','')">
+          <div class="eh"><span class="code">DBaI - S</span><span class="pill S">S</span></div>
+          <div class="name">Dejiny Balkánu</div>
+          <div class="who">Melichárek</div>
+          <div class="foot"><span>16:15&ndash;17:00</span><span class="room">AP2S11</span></div>
+        </div>
+        <div class="ev P short" style="top:976px;height:72px" onclick="showDetail('DBaI - P','Dejiny Balkánu po 2. sv. vojne','17:10 &ndash; 17:55','45 min','AP2P4','Melichárek','Prednáška','')">
+          <div class="eh"><span class="code">DBaI - P</span><span class="pill P">P</span></div>
+          <div class="name">Dejiny Balkánu</div>
+          <div class="who">Melichárek</div>
+          <div class="foot"><span>17:10&ndash;17:55</span><span class="room">AP2P4</span></div>
+        </div>
+      </div>
+      <div class="col" id="col-1">
+        <div class="hl" style="top:96px"></div>
+        <div class="hl" style="top:192px"></div>
+        <div class="hl" style="top:288px"></div>
+        <div class="hl" style="top:384px"></div>
+        <div class="hl" style="top:480px"></div>
+        <div class="hl" style="top:576px"></div>
+        <div class="hl" style="top:672px"></div>
+        <div class="hl" style="top:768px"></div>
+        <div class="hl" style="top:864px"></div>
+        <div class="hl" style="top:960px"></div>
+        <div class="hl" style="top:1056px"></div>
+        <div class="ev P left" style="top:96px;height:144px" onclick="showDetail('PPgU - P','Psychológia a pedagogická psychológia pre učiteľov','08:00 &ndash; 09:30','90 min','AK0A7','Barbierik (+1)','Prednáška','')">
+          <div class="eh"><span class="code">PPgU - P</span><span class="pill P">P</span></div>
+          <div class="name">Psychológia pre učiteľov</div>
+          <div class="who">Barbierik (+1)</div>
+          <div class="foot"><span>08:00&ndash;09:30</span><span class="room">AK0A7</span></div>
+        </div>
+        <div class="ev C right" style="top:184px;height:144px" onclick="showDetail('PsZ - C','Psychológia zdravia','08:55 &ndash; 10:25','90 min','AS3S3','Liptáková','Cvičenie','')">
+          <div class="eh"><span class="code">PsZ - C</span><span class="pill C">C</span></div>
+          <div class="name">Psychológia zdravia</div>
+          <div class="who">Liptáková</div>
+          <div class="foot"><span>08:55&ndash;10:25</span><span class="room">AS3S3</span></div>
+        </div>
+        <div class="ev P left" style="top:624px;height:144px" onclick="showDetail('KzH - P','Vybrané kapitoly z dejín historiografie','13:30 &ndash; 15:00','90 min','AP2P4','Borza (+1)','Prednáška','')">
+          <div class="eh"><span class="code">KzH - P</span><span class="pill P">P</span></div>
+          <div class="name">Kapitoly z historiografie</div>
+          <div class="who">Borza (+1)</div>
+          <div class="foot"><span>13:30&ndash;15:00</span><span class="room">AP2P4</span></div>
+        </div>
+        <div class="ev P right" style="top:712px;height:144px" onclick="showDetail('SDaM - P','Sociológia detí a mládeže','14:25 &ndash; 15:55','90 min','RE0A6','Onufrák','Prednáška','')">
+          <div class="eh"><span class="code">SDaM - P</span><span class="pill P">P</span></div>
+          <div class="name">Sociológia detí a mládeže</div>
+          <div class="who">Onufrák</div>
+          <div class="foot"><span>14:25&ndash;15:55</span><span class="room">RE0A6</span></div>
+        </div>
+        <div class="ev O left short" style="top:976px;height:72px" onclick="showDetail('Fm - P','Fenomén motorizmu','17:10 &ndash; 17:55','45 min','AP2S11','Jančura','Prednáška (Voľba 1)','')">
+          <div class="eh"><span class="code">Fm - P</span><span class="tag">Voľba 1</span></div>
+          <div class="name">Fenomén motorizmu</div>
+          <div class="who">Jančura</div>
+          <div class="foot"><span>17:10&ndash;17:55</span><span class="room">AP2S11</span></div>
+        </div>
+        <div class="ev O right short" style="top:976px;height:72px" onclick="showDetail('ZZP - P','Zážitková pedagogika','17:10 &ndash; 17:55','45 min','AA1P2','Orosová','Prednáška (Voľba 2)','')">
+          <div class="eh"><span class="code">ZZP - P</span><span class="tag">Voľba 2</span></div>
+          <div class="name">Zážitková pedagogika</div>
+          <div class="who">Orosová</div>
+          <div class="foot"><span>17:10&ndash;17:55</span><span class="room">AA1P2</span></div>
+        </div>
+      </div>
+      <div class="col" id="col-2">
+        <div class="hl" style="top:96px"></div>
+        <div class="hl" style="top:192px"></div>
+        <div class="hl" style="top:288px"></div>
+        <div class="hl" style="top:384px"></div>
+        <div class="hl" style="top:480px"></div>
+        <div class="hl" style="top:576px"></div>
+        <div class="hl" style="top:672px"></div>
+        <div class="hl" style="top:768px"></div>
+        <div class="hl" style="top:864px"></div>
+        <div class="hl" style="top:960px"></div>
+        <div class="hl" style="top:1056px"></div>
+        <div class="ev C left" style="top:448px;height:144px" onclick="showDetail('USCU - C','Súčasné USA','11:40 &ndash; 13:10','90 min','AP0S3','Rozenfeld','Cvičenie','')">
+          <div class="eh"><span class="code">USCU - C</span><span class="pill C">C</span></div>
+          <div class="name">Súčasné USA</div>
+          <div class="who">Rozenfeld</div>
+          <div class="foot"><span>11:40&ndash;13:10</span><span class="room">AP0S3</span></div>
+        </div>
+        <div class="ev O right" style="top:536px;height:144px" onclick="showDetail('DIAJmu1 - C','Didaktika angličtiny 1 pre AJALm','12:35 &ndash; 14:05','90 min','AP1S9 / AS1L9','Szabó','Cvičenie (2 skupiny)','')">
+          <div class="eh"><span class="code">DIAJmu1 - C</span><span class="tag">2 skupiny</span></div>
+          <div class="name">Didaktika angličtiny 1</div>
+          <div class="who">Szabó</div>
+          <div class="foot"><span>12:35&ndash;14:05</span><span class="room">AP1S9 / AS1L9</span></div>
+        </div>
+        <div class="ev S left short" style="top:888px;height:72px" onclick="showDetail('Fm - S','Fenomén motorizmu','16:15 &ndash; 17:00','45 min','AP0S4','Jančura','Seminár','')">
+          <div class="eh"><span class="code">Fm - S</span><span class="pill S">S</span></div>
+          <div class="name">Fenomén motorizmu</div>
+          <div class="who">Jančura</div>
+          <div class="foot"><span>16:15&ndash;17:00</span><span class="room">AP0S4</span></div>
+        </div>
+        <div class="ev S right short" style="top:888px;height:72px" onclick="showDetail('KzH - S','Vybrané kapitoly z dejín historiografie','16:15 &ndash; 17:00','45 min','AP1S8','Švigárová','Seminár','')">
+          <div class="eh"><span class="code">KzH - S</span><span class="pill S">S</span></div>
+          <div class="name">Kapitoly z historiografie</div>
+          <div class="who">Švigárová</div>
+          <div class="foot"><span>16:15&ndash;17:00</span><span class="room">AP1S8</span></div>
+        </div>
+      </div>
+      <div class="col" id="col-3">
+        <div class="hl" style="top:96px"></div>
+        <div class="hl" style="top:192px"></div>
+        <div class="hl" style="top:288px"></div>
+        <div class="hl" style="top:384px"></div>
+        <div class="hl" style="top:480px"></div>
+        <div class="hl" style="top:576px"></div>
+        <div class="hl" style="top:672px"></div>
+        <div class="hl" style="top:768px"></div>
+        <div class="hl" style="top:864px"></div>
+        <div class="hl" style="top:960px"></div>
+        <div class="hl" style="top:1056px"></div>
+        <div class="ev C" style="top:8px;height:720px" onclick="showDetail('MPPa - C','Hospitačná náčuvová pedagogicko-psychologická prax','07:05 &ndash; 14:35','450 min','—','Barbierik (+3)','Cvičenie','Blok 1.10. – 12.11.')">
+          <div class="eh"><span class="code">MPPa - C</span><span class="pill C">C</span></div>
+          <div class="name">Hospitačná náčuvová pedagogicko-psychologická prax</div>
+          <div class="who">Barbierik (+3)</div><div class="note">Blok 1.10. – 12.11.</div>
+          <div class="foot"><span>07:05&ndash;14:35</span><span class="room">—</span></div>
+        </div>
+        <div class="ev C" style="top:800px;height:144px" onclick="showDetail('GSTm - C','Rodové štúdiá','15:20 &ndash; 16:50','90 min','AP1P2','Filipová','Cvičenie','')">
+          <div class="eh"><span class="code">GSTm - C</span><span class="pill C">C</span></div>
+          <div class="name">Rodové štúdiá</div>
+          <div class="who">Filipová</div>
+          <div class="foot"><span>15:20&ndash;16:50</span><span class="room">AP1P2</span></div>
+        </div>
+        <div class="ev P" style="top:976px;height:144px" onclick="showDetail('PaD - P','Pedagogika a didaktika pre učiteľov','17:10 &ndash; 18:40','90 min','—','—','Prednáška','')">
+          <div class="eh"><span class="code">PaD - P</span><span class="pill P">P</span></div>
+          <div class="name">Pedagogika a didaktika</div>
+          <div class="who">—</div>
+          <div class="foot"><span>17:10&ndash;18:40</span><span class="room">—</span></div>
+        </div>
+      </div>
+      <div class="col" id="col-4">
+        <div class="hl" style="top:96px"></div>
+        <div class="hl" style="top:192px"></div>
+        <div class="hl" style="top:288px"></div>
+        <div class="hl" style="top:384px"></div>
+        <div class="hl" style="top:480px"></div>
+        <div class="hl" style="top:576px"></div>
+        <div class="hl" style="top:672px"></div>
+        <div class="hl" style="top:768px"></div>
+        <div class="hl" style="top:864px"></div>
+        <div class="hl" style="top:960px"></div>
+        <div class="hl" style="top:1056px"></div>
+        <div class="ev P short" style="top:360px;height:72px" onclick="showDetail('HVP - P','História vo verejnom priestore','10:45 &ndash; 11:30','45 min','AP2S11','Śnieżko','Prednáška','')">
+          <div class="eh"><span class="code">HVP - P</span><span class="pill P">P</span></div>
+          <div class="name">História vo verejnom priestore</div>
+          <div class="who">Śnieżko</div>
+          <div class="foot"><span>10:45&ndash;11:30</span><span class="room">AP2S11</span></div>
+        </div>
+        <div class="ev S short" style="top:448px;height:72px" onclick="showDetail('HVP - S','História vo verejnom priestore','11:40 &ndash; 12:25','45 min','AP2S11','Śnieżko','Seminár','')">
+          <div class="eh"><span class="code">HVP - S</span><span class="pill S">S</span></div>
+          <div class="name">História vo verejnom priestore</div>
+          <div class="who">Śnieżko</div>
+          <div class="foot"><span>11:40&ndash;12:25</span><span class="room">AP2S11</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="ovl" onclick="closeModal()">
+  <div class="mc" onclick="event.stopPropagation()">
+    <button class="mx" onclick="closeModal()">&times;</button>
+    <div class="code" id="mCode" style="color:var(--text-muted);margin-bottom:.25rem"></div>
+    <div class="mt" id="mName"></div>
+    <div class="mr"><span class="ml">Čas</span><span class="mv" id="mTime"></span></div>
+    <div class="mr"><span class="ml">Trvanie</span><span class="mv" id="mDur"></span></div>
+    <div class="mr"><span class="ml">Miestnosť</span><span class="mv" id="mRoom"></span></div>
+    <div class="mr"><span class="ml">Vyučujúci</span><span class="mv" id="mWho"></span></div>
+    <div class="mr"><span class="ml">Typ</span><span class="mv" id="mType"></span></div>
+    <div class="mr" id="mNoteRow"><span class="ml">Poznámka</span><span class="mv" id="mNote"></span></div>
+    <div class="mr"><span class="ml">Frekvencia</span><span class="mv">TYZ (od 14.09.2026)</span></div>
+    <div class="mr"><span class="ml">Obdobie</span><span class="mv">14.09.2026 &ndash; 18.12.2026</span></div>
+  </div>
+</div>
+
+<script>
+function toggleTheme(){
+  var d=document.documentElement;
+  d.setAttribute('data-theme', d.getAttribute('data-theme')==='dark'?'light':'dark');
+}
+function switchDay(i){
+  document.querySelectorAll('.tab').forEach(function(t,n){t.classList.toggle('active',n===i)});
+  document.querySelectorAll('.dh').forEach(function(h,n){if(n>0)h.classList.toggle('on',n-1===i)});
+  document.querySelectorAll('.col').forEach(function(c,n){c.classList.toggle('on',n===i)});
+}
+function showDetail(code,name,time,dur,room,who,type,note){
+  document.getElementById('mCode').textContent=code;
+  document.getElementById('mName').textContent=name;
+  document.getElementById('mTime').textContent=time;
+  document.getElementById('mDur').textContent=dur;
+  document.getElementById('mRoom').textContent=room;
+  document.getElementById('mWho').textContent=who;
+  document.getElementById('mType').textContent=type;
+  document.getElementById('mNote').textContent=note||'';
+  document.getElementById('mNoteRow').style.display=note?'flex':'none';
+  document.getElementById('ovl').style.display='flex';
+}
+function closeModal(){document.getElementById('ovl').style.display='none';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){
+  document.documentElement.setAttribute('data-theme','dark');
+}
+</script>
+</body>
+</html>
