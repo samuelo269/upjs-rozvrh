@@ -33,13 +33,13 @@ var LESSONS = [
   { day: 1, type: 'C', code: 'PsZ - C', name: 'Psychológia zdravia', start: '08:55', end: '10:25', room: 'AS3S3', teacher: 'Liptáková', typeLabel: 'Cvičenie' },
   { day: 1, type: 'P', code: 'KzH - P', name: 'Vybrané kapitoly z dejín historiografie', shortName: 'Kapitoly z historiografie', start: '13:30', end: '15:00', room: 'AP2P4', teacher: 'Borza (+1)', typeLabel: 'Prednáška' },
   { day: 1, type: 'P', code: 'SDaM - P', name: 'Sociológia detí a mládeže', start: '14:25', end: '15:55', room: 'RE0A6', teacher: 'Onufrák', typeLabel: 'Prednáška' },
+  { day: 1, type: 'S', code: 'Fm - S', name: 'Fenomén motorizmu', start: '16:15', end: '17:00', room: 'AP0S4', teacher: 'Jančura', typeLabel: 'Seminár' },
   { day: 1, type: 'O', code: 'Fm - P', name: 'Fenomén motorizmu', start: '17:10', end: '17:55', room: 'AP2S11', teacher: 'Jančura', typeLabel: 'Prednáška (Voľba 1)', tag: 'Voľba 1' },
   { day: 1, type: 'O', code: 'ZZP - P', name: 'Zážitková pedagogika', start: '17:10', end: '17:55', room: 'AA1P2', teacher: 'Orosová', typeLabel: 'Prednáška (Voľba 2)', tag: 'Voľba 2' },
 
   // ---- Streda ----
   { day: 2, type: 'C', code: 'USCU - C', name: 'Súčasné USA', start: '11:40', end: '13:10', room: 'AP0S3', teacher: 'Rozenfeld', typeLabel: 'Cvičenie' },
   { day: 2, type: 'O', code: 'DIAJmu1 - C', name: 'Didaktika angličtiny 1 pre AJALm', shortName: 'Didaktika angličtiny 1', start: '12:35', end: '14:05', room: 'AP1S9 / AS1L9', teacher: 'Szabó', typeLabel: 'Cvičenie (2 skupiny)', tag: '2 skupiny' },
-  { day: 2, type: 'S', code: 'Fm - S', name: 'Fenomén motorizmu', start: '16:15', end: '17:00', room: 'AP0S4', teacher: 'Jančura', typeLabel: 'Seminár' },
   { day: 2, type: 'S', code: 'KzH - S', name: 'Vybrané kapitoly z dejín historiografie', shortName: 'Kapitoly z historiografie', start: '16:15', end: '17:00', room: 'AP1S8', teacher: 'Švigárová', typeLabel: 'Seminár' },
 
   // ---- Štvrtok ----
