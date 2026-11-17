@@ -40,12 +40,11 @@ var LESSONS = [
   // ---- Streda ----
   { day: 2, type: 'C', code: 'USCU - C', name: 'Súčasné USA', start: '11:40', end: '13:10', room: 'AP0S3', teacher: 'Rozenfeld', typeLabel: 'Cvičenie' },
   { day: 2, type: 'O', code: 'DIAJmu1 - C', name: 'Didaktika angličtiny 1 pre AJALm', shortName: 'Didaktika angličtiny 1', start: '12:35', end: '14:05', room: 'AP1S9 / AS1L9', teacher: 'Szabó', typeLabel: 'Cvičenie (2 skupiny)', tag: '2 skupiny' },
-  { day: 2, type: 'S', code: 'KzH - S', name: 'Vybrané kapitoly z dejín historiografie', shortName: 'Kapitoly z historiografie', start: '16:15', end: '17:00', room: 'AP1S8', teacher: 'Švigárová', typeLabel: 'Seminár' },
+  { day: 2, type: 'S', code: 'KzH - S', name: 'Vybrané kapitoly z dejín historiografie', shortName: 'Kapitoly z historiografie', start: '08:55', end: '09:40', room: 'AP0S1', teacher: 'Švigárová', typeLabel: 'Seminár' },
 
   // ---- Štvrtok ----
-  { day: 3, type: 'C', code: 'MPPa - C', name: 'Hospitačná náčuvová pedagogicko-psychologická prax', start: '07:05', end: '14:35', room: '—', teacher: 'Barbierik (+3)', typeLabel: 'Cvičenie', note: 'Blok 1.10. – 12.11.' },
   { day: 3, type: 'C', code: 'GSTm - C', name: 'Rodové štúdiá', start: '15:20', end: '16:50', room: 'AP1P2', teacher: 'Filipová', typeLabel: 'Cvičenie' },
-  { day: 3, type: 'P', code: 'PaD - P', name: 'Pedagogika a didaktika pre učiteľov', shortName: 'Pedagogika a didaktika', start: '17:10', end: '18:40', room: '—', teacher: '—', typeLabel: 'Prednáška' },
+  { day: 3, type: 'P', code: 'PaD - P', name: 'Pedagogika a didaktika pre učiteľov', shortName: 'Pedagogika a didaktika', start: '11:40', end: '13:10', room: 'AS1L9', teacher: '—', typeLabel: 'Prednáška' },
 
   // ---- Piatok ----
   { day: 4, type: 'P', code: 'HVP - P', name: 'História vo verejnom priestore', start: '10:45', end: '11:30', room: 'AP2S11', teacher: 'Śnieżko', typeLabel: 'Prednáška' },
