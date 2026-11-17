@@ -45,6 +45,12 @@
     <div class="hint">Klikni na predmet pre detaily<span class="hint-keys"> · šípky ← → prepínajú dni</span></div>
   </div>
 
+  <div class="weather-info">
+    <span id="weatherStatus" role="status">Načítavam počasie pre Košice…</span>
+    <button class="weather-retry" id="weatherRetry" type="button" hidden>Skúsiť znova</button>
+    <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Počasie: Open-Meteo</a>
+  </div>
+
   <div class="tabs" id="tabs"></div>
 
   <div class="card">
@@ -70,10 +76,31 @@
     <div class="mr" id="mNoteRow"><span class="ml">Poznámka</span><span class="mv" id="mNote"></span></div>
     <div class="mr"><span class="ml">Frekvencia</span><span class="mv" id="mFreq"></span></div>
     <div class="mr"><span class="ml">Obdobie</span><span class="mv" id="mRange"></span></div>
+    <section class="weather-detail" id="mWeather" aria-labelledby="mWeatherTitle">
+      <h2 id="mWeatherTitle">Počasie na hodinu</h2>
+      <p class="weather-context" id="mWeatherContext" hidden></p>
+      <p class="weather-message" id="mWeatherMessage"></p>
+      <div id="mWeatherContent" hidden>
+        <div class="weather-current">
+          <span class="weather-icon" id="mWeatherIcon" aria-hidden="true"></span>
+          <div class="weather-temperature"><span id="mWeatherTemp"></span><span class="weather-unit">°C</span></div>
+          <div class="weather-description">
+            <p id="mWeatherCondition"></p>
+            <p class="weather-feels" id="mWeatherFeels"></p>
+          </div>
+        </div>
+        <dl class="weather-metrics">
+          <div><dt>Pravdepodobnosť zrážok</dt><dd id="mWeatherRain"></dd></div>
+          <div><dt>Rýchlosť vetra</dt><dd id="mWeatherWind"></dd></div>
+        </dl>
+        <p class="weather-hourly" id="mWeatherHourly"></p>
+      </div>
+    </section>
   </div>
 </div>
 
 <script src="data.js"></script>
+<script src="weather.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

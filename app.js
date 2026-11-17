@@ -10,6 +10,12 @@
 
   var activeDay = 0;
   var els = {};
+  var weatherNodes = [];
+  var weatherState = 'loading';
+  var weatherHourly = null;
+  var weatherUpdated = 0;
+  var weatherPending = false;
+  var detailLesson = null;
 
   /* ---------------- pomocné funkcie ---------------- */
 
@@ -104,6 +110,86 @@
     try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* private mode */ }
   }
 
+  /* ---------------- počasie ---------------- */
+
+  function weatherNode(l, agenda) {
+    var node = el('span', agenda ? 'achip weather-chip' : 'weather-chip', '…');
+    weatherNodes.push({ node: node, lesson: l, agenda: agenda });
+    return node;
+  }
+
+  function weatherText(l, now) {
+    var date = WeatherForecast.nextOccurrence(l, now, CONFIG);
+    if (!date) return { compact: '—', summary: 'Bez ďalšej výučby v tomto semestri.' };
+    var context = CONFIG.weather.location + ' · ' + date.split('-').reverse().join('.') + ' · ' + l.start;
+    if (weatherState === 'loading') return { compact: '…', summary: context + ' · Načítavam počasie…' };
+    if (weatherState === 'error') return { compact: '—', summary: context + ' · Počasie sa nepodarilo načítať. Skúste znova.' };
+    var forecast = WeatherForecast.forLesson(weatherHourly, l, date);
+    if (!forecast) return { compact: '—', summary: context + ' · Predpoveď nie je dostupná pre tento termín.' };
+    var compact = forecast.conditions.icon + ' ' + forecast.temperature + '°C';
+    var rain = Number.isFinite(forecast.rain) ? ' · zrážky ' + forecast.rain + ' %' : '';
+    var details = context + ' · ' + forecast.conditions.label + ' · ' + forecast.temperature + ' °C' + rain;
+    if (Number.isFinite(forecast.apparent)) details += ' · pocitovo ' + Math.round(forecast.apparent) + ' °C';
+    if (Number.isFinite(forecast.wind)) details += ' · vietor ' + Math.round(forecast.wind) + ' km/h';
+    details += ' · hodinová predpoveď na ' + forecast.time.slice(11);
+    return { compact: compact, agenda: compact + rain, summary: details, forecast: forecast, context: context };
+  }
+
+  function renderWeatherDetail(l, now) {
+    var text = weatherText(l, now);
+    var forecast = text.forecast;
+    document.getElementById('mWeather').setAttribute('aria-busy', weatherState === 'loading' ? 'true' : 'false');
+    document.getElementById('mWeatherContent').hidden = !forecast;
+    document.getElementById('mWeatherMessage').hidden = !!forecast;
+    document.getElementById('mWeatherContext').hidden = !forecast;
+    if (!forecast) {
+      document.getElementById('mWeatherMessage').textContent = text.summary;
+      return;
+    }
+    document.getElementById('mWeatherContext').textContent = text.context;
+    document.getElementById('mWeatherIcon').textContent = forecast.conditions.icon;
+    document.getElementById('mWeatherTemp').textContent = forecast.temperature;
+    document.getElementById('mWeatherCondition').textContent = forecast.conditions.label;
+    document.getElementById('mWeatherFeels').textContent = Number.isFinite(forecast.apparent)
+      ? 'Pocitovo ' + Math.round(forecast.apparent) + ' °C' : 'Pocitová teplota nedostupná';
+    document.getElementById('mWeatherRain').textContent = Number.isFinite(forecast.rain) ? forecast.rain + ' %' : 'Nedostupné';
+    document.getElementById('mWeatherWind').textContent = Number.isFinite(forecast.wind) ? Math.round(forecast.wind) + ' km/h' : 'Nedostupné';
+    document.getElementById('mWeatherHourly').textContent = 'Hodinová predpoveď na ' + forecast.time.slice(11) + ' · Open-Meteo';
+  }
+
+  function updateWeather(now) {
+    weatherNodes.forEach(function (item) {
+      var text = weatherText(item.lesson, now);
+      item.node.textContent = item.agenda ? text.agenda || text.compact : text.compact;
+      item.node.title = text.summary;
+      item.node.setAttribute('aria-label', text.summary);
+    });
+    if (detailLesson) renderWeatherDetail(detailLesson, now);
+  }
+
+  async function refreshWeather() {
+    if (weatherPending) return;
+    weatherPending = true;
+    weatherState = 'loading';
+    els.weatherRetry.hidden = true;
+    els.weatherStatus.textContent = 'Načítavam počasie pre ' + CONFIG.weather.location + '…';
+    updateWeather(new Date());
+    try {
+      weatherHourly = await WeatherForecast.load(CONFIG.weather);
+      weatherState = 'ready';
+      els.weatherStatus.textContent = CONFIG.weather.location + ' · Počasie pre najbližší termín každej hodiny · °C, zrážky v %';
+    } catch (error) {
+      weatherState = 'error';
+      els.weatherStatus.textContent = 'Počasie sa nepodarilo načítať. Skontrolujte pripojenie a skúste znova.';
+      els.weatherRetry.hidden = false;
+      console.error('Nepodarilo sa načítať predpoveď počasia:', error);
+    } finally {
+      weatherPending = false;
+      weatherUpdated = Date.now();
+      updateWeather(new Date());
+    }
+  }
+
   /* ---------------- vykreslenie ---------------- */
 
   function todayIndex() {
@@ -136,6 +222,7 @@
 
     var head = el('div', 'eh');
     head.appendChild(el('span', 'code', l.code));
+    head.appendChild(weatherNode(l, false));
     head.appendChild(l.tag ? el('span', 'tag', l.tag) : el('span', 'pill ' + l.type, l.type === 'O' ? 'OPT' : l.type));
     n.appendChild(head);
     n.appendChild(el('div', 'name', l.label));
@@ -199,6 +286,7 @@
     var meta = el('div', 'ameta');
     meta.appendChild(el('span', 'achip aroom', l.room));
     meta.appendChild(el('span', 'achip', l.teacher));
+    meta.appendChild(weatherNode(l, true));
     if (l.note) meta.appendChild(el('span', 'achip anote', l.note));
     body.appendChild(meta);
 
@@ -336,11 +424,15 @@
     var info = updateBanner(now);
     updateHighlights(info);
     updateNowLine(now);
+    updateWeather(now);
+    if (!weatherPending && Date.now() - weatherUpdated >= 30 * 60 * 1000) refreshWeather();
   }
 
   /* ---------------- modálne okno ---------------- */
 
   function openDetail(l) {
+    detailLesson = l;
+    renderWeatherDetail(l, new Date());
     document.getElementById('mCode').textContent = l.code;
     document.getElementById('mName').textContent = l.name;
     document.getElementById('mTime').textContent = l.start + ' – ' + l.end;
@@ -355,6 +447,7 @@
     document.body.style.overflow = 'hidden';
   }
   function closeModal() {
+    detailLesson = null;
     els.ovl.classList.remove('open');
     document.body.style.overflow = '';
   }
@@ -393,6 +486,9 @@
     els.agenda = document.getElementById('agenda');
     els.banner = document.getElementById('banner');
     els.ovl = document.getElementById('ovl');
+    els.weatherStatus = document.getElementById('weatherStatus');
+    els.weatherRetry = document.getElementById('weatherRetry');
+    els.weatherRetry.addEventListener('click', refreshWeather);
 
     document.getElementById('semLabel').textContent = CONFIG.semester;
     document.getElementById('rangeLabel').textContent =

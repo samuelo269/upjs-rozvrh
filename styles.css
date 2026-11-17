@@ -61,6 +61,12 @@ h1{font-size:clamp(1.3rem,.95rem + 1.1vw,1.75rem);font-weight:800;letter-spacing
 .pill.P{background:var(--p-bd)} .pill.C{background:var(--c-bd)} .pill.S{background:var(--s-bd)} .pill.O{background:var(--o-bd)}
 .hint{font-size:.8rem;color:var(--text-muted);font-weight:600}
 .hint-keys{display:none}
+.weather-info{display:flex;align-items:center;gap:.4rem .8rem;flex-wrap:wrap;margin:-.35rem 0 .8rem;font-size:.72rem;color:var(--text-muted);line-height:1.5}
+.weather-info a{color:inherit;margin-left:auto}
+.weather-retry{font:inherit;color:var(--p-tx);background:var(--p-bg);border:1px solid var(--p-br);border-radius:4px;padding:.1rem .4rem;cursor:pointer}
+.weather-retry[hidden]{display:none}
+.weather-chip{font-size:.65rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+.eh .code{min-width:0;flex:1}
 
 /* ---------- prepínač dní ---------- */
 .tabs{display:none;gap:.5rem;margin-bottom:1rem;overflow-x:auto;padding:.25rem 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -157,6 +163,21 @@ h1{font-size:clamp(1.3rem,.95rem + 1.1vw,1.75rem);font-weight:800;letter-spacing
 .mr:last-child{border-bottom:none}
 .ml{color:var(--text-muted);font-weight:600;white-space:nowrap}
 .mv{font-weight:700;text-align:right}
+.weather-detail{margin-top:1rem;padding:1rem;border:1px solid var(--p-br);border-radius:var(--r-md);background:linear-gradient(135deg,var(--p-bg),var(--bg-card));color:var(--text-main)}
+.weather-detail h2{font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--p-tx)}
+.weather-context{font-size:.72rem;color:var(--text-muted);line-height:1.5;margin-top:.3rem}
+.weather-current{display:flex;align-items:center;gap:.75rem;margin:1rem 0}
+.weather-icon{font-size:2.5rem;line-height:1;flex:none;filter:drop-shadow(0 3px 5px rgb(0 0 0/.08))}
+.weather-temperature{display:flex;align-items:flex-start;font-size:2.6rem;line-height:1;font-weight:800;letter-spacing:-.06em;white-space:nowrap}
+.weather-unit{font-size:1rem;letter-spacing:0;font-weight:600;color:var(--text-muted);margin:.3rem 0 0 .2rem}
+.weather-description{min-width:0;margin-left:auto;font-size:.85rem;font-weight:700;line-height:1.4;text-align:right}
+.weather-feels{font-size:.72rem;font-weight:500;color:var(--text-muted);margin-top:.2rem}
+.weather-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
+.weather-metrics>div{padding:.65rem .75rem;border-radius:var(--r-sm);background:var(--bg-card);border:1px solid var(--border-subtle)}
+.weather-metrics dt{font-size:.67rem;font-weight:600;color:var(--text-muted);line-height:1.4}
+.weather-metrics dd{font-size:1.05rem;font-weight:800;margin-top:.3rem}
+.weather-hourly{font-size:.64rem;color:var(--text-muted);margin-top:.75rem;line-height:1.5}
+.weather-message{font-size:.8rem;color:var(--text-muted);line-height:1.6;margin-top:.6rem}
 
 /* ---------- tablet: jeden deň, obsah necháme čitateľne úzky ---------- */
 @media(max-width:1100px){
@@ -167,6 +188,7 @@ h1{font-size:clamp(1.3rem,.95rem + 1.1vw,1.75rem);font-weight:800;letter-spacing
   .card{max-width:720px;margin-inline:auto}
   .hint-keys{display:inline}
   .legend,.banner,.tabs{max-width:720px;margin-inline:auto}
+  .weather-info{max-width:720px;margin-inline:auto}
   .legend,.banner{margin-bottom:.9rem}
   .ev .name{font-size:.85rem;-webkit-line-clamp:2;line-clamp:2}
   .ev .who,.ev .code,.ev .foot{font-size:.72rem}
@@ -196,4 +218,7 @@ h1{font-size:clamp(1.3rem,.95rem + 1.1vw,1.75rem);font-weight:800;letter-spacing
   .arow{padding:.6rem .65rem;gap:.55rem}
   .atime{min-width:54px}
   .aname{font-size:.88rem}
+  .weather-current{flex-wrap:wrap;gap:.6rem}
+  .weather-description{flex-basis:100%;margin-left:0;text-align:left}
+  .weather-metrics>div{padding:.55rem}
 }

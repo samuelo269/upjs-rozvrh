@@ -7,6 +7,7 @@ var CONFIG = {
   endDate: '2026-12-18',
   dayStart: '07:00',
   dayEnd: '19:00',
+  weather: { latitude: 48.7164, longitude: 21.2611, timezone: 'Europe/Bratislava', location: 'Košice' },
   days: [
     { full: 'Pondelok', short: 'Po' },
     { full: 'Utorok', short: 'Ut' },
